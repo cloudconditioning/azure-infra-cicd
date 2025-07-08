@@ -6,6 +6,12 @@ variable "location" {
   default     = "eastus"
 }
 
+variable "location2" {
+  description = "The Azure region where the resources will be created."
+  type        = string
+  default     = "eastus2"
+}
+
 variable "resourceGroupName" {
   description = "The name of the resource group where the virtual network will be created."
   type        = string

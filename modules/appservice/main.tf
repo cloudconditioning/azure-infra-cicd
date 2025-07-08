@@ -34,7 +34,7 @@ resource "azurerm_linux_web_app" "web_app" {
   }
   site_config {
     application_stack {
-      node_version = "18-lts"
+      node_version = "22-lts"
     }
 
   }

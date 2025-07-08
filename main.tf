@@ -69,7 +69,7 @@ module "storage" {
 
 module "appservice" {
   source = "./modules/appservice"
-  location = var.location
+  location = var.location2
   resource_group_name = var.resourceGroupName
   app_identity_id = module.shared.web_app_identity_id
   web_app_storage_account_name = module.storage.web_app_storage_account_name
