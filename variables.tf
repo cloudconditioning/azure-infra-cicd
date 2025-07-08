@@ -18,3 +18,28 @@ variable "tfstateResourceGroupName" {
   default     = "tfstate-rg"
 
 }
+
+variable "role_definition_name" {
+  description = "The name of the role definition to assign to the Web App for storage access."
+  type        = string
+  default     = "Storage Blob Data Reader" # Role that allows read access to storage blobs 
+}
+
+variable "web_app_storage_account_name" {
+  description = "The name of the storage account for the Web App."
+  type        = string
+    default = "webappstorage"
+}
+
+variable "app_service_plan_name" {
+  description = "The name of the App Service Plan."
+  type        = string
+  default = "cloudconditoning-serviceapp"
+}
+
+
+variable "web_app_name" {
+  description = "The name of the Web App."
+  type        = string
+  default = "cloudconditioning-webapp"
+}

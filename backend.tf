@@ -1,9 +1,9 @@
-/*
+
 terraform {
 
   backend "azurerm" {
     resource_group_name  = "tfstate-rg"
-    storage_account_name = "tfstate2aq87j" # enter the storage account name once the resource is created
+    storage_account_name = "tfstatel43j26" # enter the storage account name once the resource is created
     container_name       = "tfstate-container"
     key                  = "terraform.tfstate"
     use_azuread_auth     = true # Allows tenantid and subscription_id to be used for authentication
@@ -14,4 +14,3 @@ terraform {
 
   }
 }
-*/
