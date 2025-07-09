@@ -9,7 +9,7 @@ terraform {
       version = ">4.30.0"
     }
     random = {
-      source = "hashicorp/random"
+      source  = "hashicorp/random"
       version = "~> 3.0"
     }
   }
@@ -45,46 +45,57 @@ module "networking" {
 
 # Creat Ransom string for the storage account
 resource "random_string" "string" {
-  length = 6
+  length  = 6
   special = false
-  upper = false
+  upper   = false
 }
 
 # Create Resource from shared module
 module "shared" {
-  source = "./modules/shared"
+  source              = "./modules/shared"
   resource_group_name = var.resourceGroupName
-  location = var.location
+  location            = var.location
 }
 
 module "storage" {
-  depends_on = [ azurerm_resource_group.rg ]
-  source            = "./modules/storage"
-  location          = var.location
-  resource_group_name  = var.resourceGroupName
+  depends_on                   = [azurerm_resource_group.rg]
+  source                       = "./modules/storage"
+  location                     = var.location
+  resource_group_name          = var.resourceGroupName
   web_app_storage_account_name = "${var.web_app_storage_account_name}${random_string.string.result}"
 
 
 }
 
 module "appservice" {
-  source = "./modules/appservice"
-  location = var.location2
-  resource_group_name = var.resourceGroupName
-  app_identity_id = module.shared.web_app_identity_id
+  source                       = "./modules/appservice"
+  location                     = var.location2
+  resource_group_name          = var.resourceGroupName
+  app_identity_id              = module.shared.web_app_identity_id
   web_app_storage_account_name = module.storage.web_app_storage_account_name
-  web_app_name = var.web_app_name
-  web_app_container_scope = module.storage.web_app_storage_account_id
-app_service_plan_name = var.app_service_plan_name
+  web_app_name                 = var.web_app_name
+  web_app_container_scope      = module.storage.web_app_storage_account_id
+  app_service_plan_name        = var.app_service_plan_name
 
-  }
+}
 
 # Optional - Assing Role to the web app for storage access
 resource "azurerm_role_assignment" "web_app_storage_data_reader" {
-  scope = module.storage.web_app_storage_account_id
+  scope                = module.storage.web_app_storage_account_id
   role_definition_name = var.role_definition_name
-  principal_id = module.shared.web_app_identity_principal_id
-  
+  principal_id         = module.shared.web_app_identity_principal_id
 }
 
+# Assign Database Managed Identity to SQL Administrator
+## may not be needed
+
+# Module for SQL Database
+module "sql_database" {
+  source              = "./modules/database"
+  resource_group_name = var.resourceGroupName
+  location            = var.location2
+  login_username      = module.shared.sql_admins_group_name
+  object_id           = module.shared.sql_admins_group_object_id
+
+}
 

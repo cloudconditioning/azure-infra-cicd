@@ -34,18 +34,18 @@ variable "role_definition_name" {
 variable "web_app_storage_account_name" {
   description = "The name of the storage account for the Web App."
   type        = string
-    default = "webappstorage"
+  default     = "webappstorage"
 }
 
 variable "app_service_plan_name" {
   description = "The name of the App Service Plan."
   type        = string
-  default = "cloudconditoning-serviceapp"
+  default     = "cloudconditoning-serviceapp"
 }
 
 
 variable "web_app_name" {
   description = "The name of the Web App."
   type        = string
-  default = "cloudconditioning-webapp"
+  default     = "cloudconditioning-webapp"
 }
