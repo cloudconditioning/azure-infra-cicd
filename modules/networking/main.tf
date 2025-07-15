@@ -19,6 +19,9 @@ resource "azurerm_subnet" "subnets" {
   virtual_network_name              = azurerm_virtual_network.vnet1.name
   address_prefixes                  = [var.subnetPrefixes[each.key]]
   private_endpoint_network_policies = "Enabled"
+  service_endpoints = (each.value == "db-subnet" ? ["Microsoft.Sql"] : [])      # service endpoints - provide secure and direct connectivity to Azure services over Azure backbone network . 
+      # conditional statement above need `[]` to work instead of '[""]'
+  default_outbound_access_enabled = (each.value == "db-subnet" ? false : true)
 }
 
 # Resource 3: Network Security Group
