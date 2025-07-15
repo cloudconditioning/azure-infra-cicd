@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">4.30.0"
     }
+    azuread = {
+      source = "hashicorp/azuread"
+      # insert a version
+    }
     random = {
       source  = "hashicorp/random"
       version = "~> 3.0"
@@ -99,3 +103,36 @@ module "sql_database" {
 
 }
 
+data "azurerm_subscription" "sub" {} # Obtains the ID of the subscription to be used with later resources
+
+# Create the GitHub UAMI
+module "gh_user_assigned_identity" {
+  source              = "./modules/github_managed_identity"
+  name                = "${var.uami_github}-${var.environment}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+
+# Assign the Contributor Role to GH UAMI
+module "gh_uami_assigned_role" {
+  source               = "./modules/github_role_assignment"
+  principal_id         = module.gh_user_assigned_identity.github_uami_principal_id
+  role_definition_name = var.gh_uami_role_name
+  scope_id             = data.azurerm_subscription.sub.id
+  principal_type       = var.principal_type
+
+}
+# Created the federated identity for GH UAMI
+module "gh_federated_identity" {
+  source              = "./modules/github_federation"
+  resource_group_name = azurerm_resource_group.rg.name
+  audience            = [local.audiences]
+  subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.branch}"
+  parent_id           = module.gh_user_assigned_identity.github_uami_id
+  issuer              = local.issuer
+  name                = "${var.gh_federated_identity_name}-${var.branch}"
+
+}
+
+# Consider creating another federated identity for pull requests

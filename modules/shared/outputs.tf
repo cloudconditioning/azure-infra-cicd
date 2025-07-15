@@ -51,3 +51,5 @@ output "sql_admins_group_object_id" {
   description = "SQL Admin Group Object ID"
   value = data.azuread_group.sql_admins.object_id
 }
+
+

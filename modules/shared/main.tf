@@ -19,3 +19,8 @@ resource "azurerm_user_assigned_identity" "database_identity" {
 data "azuread_group" "sql_admins" {
     display_name = "sql-admins"
 }
+
+
+
+
+
