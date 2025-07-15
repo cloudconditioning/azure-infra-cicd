@@ -49,3 +49,52 @@ variable "web_app_name" {
   type        = string
   default     = "cloudconditioning-webapp"
 }
+
+variable "github_organzation" {
+  description = "GitHub Organization"
+  type        = string
+  default     = "cloudconditioning"
+}
+
+variable "github_repo" {
+  description = "Infrastructure Repository"
+  type        = string
+  default     = "azure-infra-cicd"
+}
+
+variable "branch" {
+  description = "Main Branch of CloudConditioning Repo"
+  type        = string
+  default     = "main"
+}
+
+variable "uami_github" {
+  description = "The user assigned identity for GitHub Actions"
+  type        = string
+  default     = "GitHubActions-UAMI"
+}
+
+variable "environment" {
+  description = "Current Environment"
+  type        = string
+  default     = "Production"
+
+}
+
+variable "gh_uami_role_name" {
+  description = "Role for the GitHub Actions Managed Identity"
+  type        = string
+  default     = "Contributor"
+}
+
+variable "principal_type" {
+  description = "Principal type for the GitHub Actions Managed Identity"
+  type        = string
+  default     = "ServicePrincipal"
+}
+
+variable "gh_federated_identity_name" {
+  description = "Name of the GitHub Actions federated identity"
+  type        = string
+  default     = "gh_federated_credential"
+}
