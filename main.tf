@@ -128,7 +128,7 @@ module "gh_federated_identity" {
   source              = "./modules/github_federation"
   resource_group_name = azurerm_resource_group.rg.name
   audience            = [local.audiences]
-  subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.main_branch}"
+  subject             = "repo:${var.github_organzation}/${var.github_repo}"
   parent_id           = module.gh_user_assigned_identity.github_uami_id
   issuer              = local.issuer
   name                = "${var.gh_federated_identity_name}-${var.main_branch}"
@@ -141,32 +141,9 @@ module "gh_federated_identity_pull_request" {
   source              = "./modules/github_federation"
   resource_group_name = azurerm_resource_group.rg.name
   audience            = [local.audiences]
-  subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.main_branch}:pull_request"
+  # subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.main_branch}:pull_request"
+  subject             = "repo:${var.github_organzation}/${var.github_repo}:pull_request"
   parent_id           = module.gh_user_assigned_identity.github_uami_id
   issuer              = local.issuer
   name                = "${var.gh_federated_identity_name}-${var.main_branch}-pull_request"
-}
-
-# Created the federated identity for GH UAMI for Dev Branch
-module "gh_federated_identity_dev" {
-  source              = "./modules/github_federation"
-  resource_group_name = azurerm_resource_group.rg.name
-  audience            = [local.audiences]
-  subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.dev_branch}"
-  parent_id           = module.gh_user_assigned_identity.github_uami_id
-  issuer              = local.issuer
-  name                = "${var.gh_federated_identity_name}-${var.dev_branch}"
-
-}
-
-# create another federated identity for Dev Branch pull requests
-
-module "gh_federated_identity_dev_pull_request" {
-  source              = "./modules/github_federation"
-  resource_group_name = azurerm_resource_group.rg.name
-  audience            = [local.audiences]
-  subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.dev_branch}:pull_request"
-  parent_id           = module.gh_user_assigned_identity.github_uami_id
-  issuer              = local.issuer
-  name                = "${var.gh_federated_identity_name}-${var.dev_branch}-pull_request"
 }
