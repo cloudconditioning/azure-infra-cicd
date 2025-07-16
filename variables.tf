@@ -46,6 +46,11 @@ variable "role_definition_name" {
   default     = "Storage Blob Data Reader" # Role that allows read access to storage blobs 
 }
 
+variable "display_name_directory_reader" {
+  type    = string
+  default = "Directory Readers"
+}
+
 variable "web_app_storage_account_name" {
   description = "The name of the storage account for the Web App."
   type        = string

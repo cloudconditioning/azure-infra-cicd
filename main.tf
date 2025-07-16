@@ -164,3 +164,10 @@ module "gh_federated_identity_pull_request" {
   issuer    = local.issuer
   name      = "${var.gh_federated_identity_name}-${var.main_branch}-pull_request"
 }
+
+# Assing Directory Reader Role to UAMI to read groups
+module "UAMI_directory_reader_role" {
+  source               = "./modules/entra_role_assignment"
+  uami_gh_principal_id = module.gh_user_assigned_identity.github_uami_principal_id
+  display_name         = var.display_name_directory_reader
+}
