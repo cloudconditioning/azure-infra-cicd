@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">4.30.0"
     }
+    azuread = {
+      source = "hashicorp/azuread"
+      # insert a version
+    }
     random = {
       source  = "hashicorp/random"
       version = "~> 3.0"
@@ -99,3 +103,71 @@ module "sql_database" {
 
 }
 
+data "azurerm_subscription" "sub" {} # Obtains the ID of the subscription to be used with later resources
+
+data "azurerm_storage_blob" "tfstate" {
+  name                   = var.tfstate_blob_name
+  storage_account_name   = var.tf_state_storage_account_name
+  storage_container_name = var.tf_container_name
+}
+
+# Create the GitHub UAMI
+module "gh_user_assigned_identity" {
+  source              = "./modules/github_managed_identity"
+  name                = "${var.uami_github}-${var.environment}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+
+# Assign the Contributor Role to GH UAMI
+module "gh_uami_assigned_role" {
+  source               = "./modules/github_role_assignment"
+  principal_id         = module.gh_user_assigned_identity.github_uami_principal_id
+  role_definition_name = var.gh_uami_role_name
+  scope_id             = data.azurerm_subscription.sub.id
+  principal_type       = var.principal_type
+}
+
+# Assign Storage Contributor Role to GH UAMI
+# Assign the Contributor Role to GH UAMI
+module "gh_uami_assigned_role_storage_data_blob_contributor" {
+  source               = "./modules/github_role_assignment"
+  principal_id         = module.gh_user_assigned_identity.github_uami_principal_id
+  role_definition_name = var.storage_blob_data_contributor
+  scope_id             = data.azurerm_subscription.sub.id
+  principal_type       = var.principal_type
+
+}
+
+# Created the federated identity for GH UAMI for Main Branch
+module "gh_federated_identity" {
+  source              = "./modules/github_federation"
+  resource_group_name = azurerm_resource_group.rg.name
+  audience            = [local.audiences]
+  subject             = "repo:${var.github_organzation}/${var.github_repo}"
+  parent_id           = module.gh_user_assigned_identity.github_uami_id
+  issuer              = local.issuer
+  name                = "${var.gh_federated_identity_name}-${var.main_branch}"
+
+}
+
+# create another federated identity for Main Branch pull requests
+
+module "gh_federated_identity_pull_request" {
+  source              = "./modules/github_federation"
+  resource_group_name = azurerm_resource_group.rg.name
+  audience            = [local.audiences]
+  # subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.main_branch}:pull_request"
+  subject   = "repo:${var.github_organzation}/${var.github_repo}:pull_request"
+  parent_id = module.gh_user_assigned_identity.github_uami_id
+  issuer    = local.issuer
+  name      = "${var.gh_federated_identity_name}-${var.main_branch}-pull_request"
+}
+
+# Assing Directory Reader Role to UAMI to read groups
+module "UAMI_directory_reader_role" {
+  source               = "./modules/entra_role_assignment"
+  uami_gh_principal_id = module.gh_user_assigned_identity.github_uami_principal_id
+  display_name         = var.display_name_directory_reader
+}

@@ -38,3 +38,7 @@ terraform.rc
 
 # Project Steps for Personal Notes
 Project/
+
+
+# Temporary for GitHub Actions Workflow
+.github/
