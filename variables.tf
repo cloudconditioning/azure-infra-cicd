@@ -25,6 +25,21 @@ variable "tfstateResourceGroupName" {
 
 }
 
+variable "tfstate_blob_name" {
+  type    = string
+  default = "terraform.tfstate"
+}
+
+variable "tf_state_storage_account_name" {
+  type    = string
+  default = "tfstatel43j26"
+}
+
+variable "tf_container_name" {
+  type    = string
+  default = "tfstate-container"
+}
+
 variable "role_definition_name" {
   description = "The name of the role definition to assign to the Web App for storage access."
   type        = string
@@ -91,6 +106,12 @@ variable "gh_uami_role_name" {
   description = "Role for the GitHub Actions Managed Identity"
   type        = string
   default     = "Contributor"
+}
+
+variable "storage_blob_data_contributor" {
+  description = "Role for the GitHub Actions Managed Identity to access blob"
+  type        = string
+  default     = "Storage Blob Data Contributor"
 }
 
 variable "principal_type" {
