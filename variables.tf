@@ -62,10 +62,16 @@ variable "github_repo" {
   default     = "azure-infra-cicd"
 }
 
-variable "branch" {
+variable "main_branch" {
   description = "Main Branch of CloudConditioning Repo"
   type        = string
   default     = "main"
+}
+
+variable "dev_branch" {
+  description = "Dev Branch of CloudConditioning Repo"
+  type        = string
+  default     = "dev"
 }
 
 variable "uami_github" {
