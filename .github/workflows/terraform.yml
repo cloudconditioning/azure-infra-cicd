@@ -1,0 +1,72 @@
+# First GitHub Action Workflow
+
+name: Deploy Azure Infrastructure
+on:
+    push:
+        branches:
+            - main
+            - dev
+    pull_request:
+        branches:
+            - main
+            - dev
+    workflow_dispatch:
+
+permissions:
+    contents: read # can read the contents of the repo
+    id-token: write # fetches OIDC token
+    # pull-requests: write #  not needed
+
+jobs:
+    terraform:
+        name: Terraform Workflow
+        runs-on: ubuntu-latest
+
+        steps:
+            # Checkout the code
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            # Set up Terraform
+            - name: Set up Terraform
+              uses: hashicorp/setup-terraform@v3
+              # with:
+                # terraform_version: '4.30.0'# omit. this will default to latest
+    
+            # Auzre login via OIDC
+            - name: Azure Login (OIDC)
+              uses: azure/login@v1
+              with:
+                client-id: ${{ secrets.AZURE_CLIENT_ID }} # Client ID of the UAMI
+                tenant-id: ${{ secrets.AZURE_TENANT_ID}}
+                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                
+            # Run Terraform Commands
+
+            # Terraform Init
+            - name: Terraform Initialization
+              run: terraform init -input=false \
+                -backend-config="resource_group_name=${{secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME}}" \
+                -backend-config="storage_account_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}" \
+                -backend-config="container_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}"
+
+            # Terraform Format Check
+            - name: Terraform Format
+              run: terraform fmt -check 
+    
+            # Terraform Validate
+            - name: Terraform Validate
+              run: terraform validate
+    
+            # Terraform Plan
+            - name: Terraform Plan
+              run: terraform plan -input=false -out=tfplan
+    
+            # Terraform Apply for push to main
+            - name: Terraform Apply (Optional)
+              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+              run: terraform apply -auto-approve -input=false
+
+
+            
+ 
