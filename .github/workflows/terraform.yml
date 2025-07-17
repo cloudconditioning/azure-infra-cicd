@@ -5,11 +5,9 @@ on:
     push:
         branches:
             - main
-            - dev
     pull_request:
         branches:
             - main
-            - dev
     workflow_dispatch:
 
 permissions:
@@ -38,7 +36,7 @@ jobs:
               uses: azure/login@v1
               with:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }} # Client ID of the UAMI
-                tenant-id: ${{ secrets.AZURE_TENANT_ID}}
+                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
                 subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
                 
             # Run Terraform Commands
