@@ -183,10 +183,10 @@ module "gh_federated_identity_pull_request" {
   source              = "./modules/github_federation"
   resource_group_name = azurerm_resource_group.rg.name
   audience            = [local.audiences]
-  subject   = "repo:${var.github_organzation}/${var.github_repo}:pull_request"
-  parent_id = module.gh_user_assigned_identity.github_uami_id
-  issuer    = local.issuer
-  name      = "${var.gh_federated_identity_name}-${var.main_branch}-pull_request"
+  subject             = "repo:${var.github_organzation}/${var.github_repo}:pull_request"
+  parent_id           = module.gh_user_assigned_identity.github_uami_id
+  issuer              = local.issuer
+  name                = "${var.gh_federated_identity_name}-${var.main_branch}-pull_request"
 
 
 }

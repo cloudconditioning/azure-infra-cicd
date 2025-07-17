@@ -40,5 +40,5 @@ terraform.rc
 Project/
 
 
-# Temporary for GitHub Actions Workflow
-.github/
+# Temporary for GitHub Actions Workflow (Commented out the folder)
+## .github/
