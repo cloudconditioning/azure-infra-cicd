@@ -187,6 +187,8 @@ module "gh_federated_identity_pull_request" {
   parent_id = module.gh_user_assigned_identity.github_uami_id
   issuer    = local.issuer
   name      = "${var.gh_federated_identity_name}-${var.main_branch}-pull_request"
+
+
 }
 
 

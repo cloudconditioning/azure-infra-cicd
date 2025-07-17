@@ -12,4 +12,8 @@ subject = var.subject
 parent_id = var.parent_id
 issuer = var.issuer
 
+  lifecycle {
+    prevent_destroy = true
+  }
+
 }
