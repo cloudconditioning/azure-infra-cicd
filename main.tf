@@ -154,18 +154,42 @@ module "gh_federated_identity" {
 
 }
 
+# Federated Identity for Dev
+module "gh_federated_identity_dev" {
+  source              = "./modules/github_federation"
+  resource_group_name = azurerm_resource_group.rg.name
+  audience            = [local.audiences]
+  subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.dev_branch}"
+  parent_id           = module.gh_user_assigned_identity.github_uami_id
+  issuer              = local.issuer
+  name                = "${var.gh_federated_identity_name}-${var.dev_branch}"
+
+}
+
+# Federated Identity for Main
+module "gh_federated_identity_main" {
+  source              = "./modules/github_federation"
+  resource_group_name = azurerm_resource_group.rg.name
+  audience            = [local.audiences]
+  subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.main_branch}"
+  parent_id           = module.gh_user_assigned_identity.github_uami_id
+  issuer              = local.issuer
+  name                = "${var.gh_federated_identity_name}-${var.main_branch}-merge"
+
+}
 # create another federated identity for Main Branch pull requests
 
 module "gh_federated_identity_pull_request" {
   source              = "./modules/github_federation"
   resource_group_name = azurerm_resource_group.rg.name
   audience            = [local.audiences]
-  # subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.main_branch}:pull_request"
   subject   = "repo:${var.github_organzation}/${var.github_repo}:pull_request"
   parent_id = module.gh_user_assigned_identity.github_uami_id
   issuer    = local.issuer
   name      = "${var.gh_federated_identity_name}-${var.main_branch}-pull_request"
 }
+
+
 
 # Assing Directory Reader Role to UAMI to read groups
 module "UAMI_directory_reader_role" {
