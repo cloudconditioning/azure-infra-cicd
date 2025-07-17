@@ -5,16 +5,15 @@ on:
     push:
         branches:
             - main
-            # - dev
     pull_request:
         branches:
             - main
-            # - dev
     workflow_dispatch:
 
 permissions:
     contents: read # can read the contents of the repo
     id-token: write # fetches OIDC token
+    # pull-requests: write #  not needed
 
 jobs:
     terraform:
@@ -29,8 +28,8 @@ jobs:
             # Set up Terraform
             - name: Set up Terraform
               uses: hashicorp/setup-terraform@v3
-              #with:
-                #terraform_version: '1.12.2'
+              # with:
+                # terraform_version: '4.30.0'# omit. this will default to latest
     
             # Auzre login via OIDC
             - name: Azure Login (OIDC)
@@ -60,10 +59,8 @@ jobs:
     
             # Terraform Apply for push to main
             - name: Terraform Apply (Optional)
-              
-              run: |
-                if [[ "${{github.event_name}}" == "push" && "${{github.ref}}" == "refs/heads/main" ]]; then
-                  terraform apply -auto-approve -input=false  
+              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+              run: terraform apply -auto-approve -input=false
 
 
             
