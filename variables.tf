@@ -82,11 +82,13 @@ variable "github_repo" {
   default     = "azure-infra-cicd"
 }
 
+
 variable "main_branch" {
   description = "Main Branch of CloudConditioning Repo"
   type        = string
   default     = "main"
 }
+
 
 variable "dev_branch" {
   description = "Dev Branch of CloudConditioning Repo"
@@ -113,11 +115,13 @@ variable "gh_uami_role_name" {
   default     = "Contributor"
 }
 
+
 variable "storage_blob_data_contributor" {
   description = "Role for the GitHub Actions Managed Identity to access blob"
   type        = string
   default     = "Storage Blob Data Contributor"
 }
+
 
 variable "principal_type" {
   description = "Principal type for the GitHub Actions Managed Identity"
