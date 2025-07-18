@@ -90,6 +90,17 @@ resource "azurerm_role_assignment" "web_app_storage_data_reader" {
   principal_id         = module.shared.web_app_identity_principal_id
 }
 
+# Assign Contributor Role to webapp-identity so it can make changes
+module "assign_contributor_webapp_identity" {
+  source               = "../github_role_assignment"
+  principal_id         = module.shared.web_app_identity_principal_id
+  role_definition_name = var.contributor
+  # scope_id             = data.azurerm_subscription.sub # Consider giving for resource group only
+  scope_id       = azurerm_resource_group.rg.id # changed b/c error said the value was invalid
+  principal_type = var.principal_type
+
+}
+
 # Assign Database Managed Identity to SQL Administrator
 ## may not be needed
 
@@ -191,11 +202,42 @@ module "gh_federated_identity_pull_request" {
 
 }
 
-
-
 # Assing Directory Reader Role to UAMI to read groups
 module "UAMI_directory_reader_role" {
   source               = "../entra_role_assignment"
   uami_gh_principal_id = module.gh_user_assigned_identity.github_uami_principal_id
   display_name         = var.display_name_directory_reader
+}
+
+# Create the Federated Identity for webapp_identity UAMI - Any Pull Request
+module "webapp_federated_identity_pr" {
+  source              = "../github_federation"
+  resource_group_name = azurerm_resource_group.rg.name
+  audience            = [local.audiences]
+  subject             = "repo:${var.github_organzation}/${var.github_repo}:${var.pr}"
+  issuer              = local.issuer
+  name                = "${var.webapp_federated_identity_name}-${var.pr}"
+  parent_id           = module.shared.web_app_identity_id
+}
+
+# Create the Federated Identity for webapp_identity UAMI - Main Branch
+module "webapp_federated_identity_main" {
+  source              = "../github_federation"
+  resource_group_name = azurerm_resource_group.rg.name
+  audience            = [local.audiences]
+  subject             = "repo:${var.github_organzation}/${var.github_repo}:${var.ref}/${var.main_branch}"
+  issuer              = local.issuer
+  name                = "${var.webapp_federated_identity_name}-${var.main_branch}"
+  parent_id           = module.shared.web_app_identity_id
+}
+
+# Create the Federated Identity for webapp_identity UAMI - Dev Branch
+module "webapp_federated_identity_dev" {
+  source              = "../github_federation"
+  resource_group_name = azurerm_resource_group.rg.name
+  audience            = [local.audiences]
+  subject             = "repo:${var.github_organzation}/${var.github_repo}:${var.ref}/${var.dev_branch}"
+  issuer              = local.issuer
+  name                = "${var.webapp_federated_identity_name}-${var.dev_branch}"
+  parent_id           = module.shared.web_app_identity_id
 }
