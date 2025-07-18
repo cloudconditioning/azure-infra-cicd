@@ -41,7 +41,7 @@ resource "azurerm_resource_group" "rg" {
 
 
 module "networking" {
-  source            = "./modules/networking/"
+  source            = "../networking"
   location          = var.location2
   resourceGroupName = azurerm_resource_group.rg.name
   depends_on        = [azurerm_resource_group.rg]
@@ -56,14 +56,14 @@ resource "random_string" "string" {
 
 # Create Resource from shared module
 module "shared" {
-  source              = "./modules/shared"
+  source              = "../shared"
   resource_group_name = var.resourceGroupName
   location            = var.location
 }
 
 module "storage" {
   depends_on                   = [azurerm_resource_group.rg]
-  source                       = "./modules/storage"
+  source                       = "../storage"
   location                     = var.location
   resource_group_name          = var.resourceGroupName
   web_app_storage_account_name = "${var.web_app_storage_account_name}${random_string.string.result}"
@@ -72,7 +72,7 @@ module "storage" {
 }
 
 module "appservice" {
-  source                       = "./modules/appservice"
+  source                       = "../appservice"
   location                     = var.location2
   resource_group_name          = var.resourceGroupName
   app_identity_id              = module.shared.web_app_identity_id
@@ -95,7 +95,7 @@ resource "azurerm_role_assignment" "web_app_storage_data_reader" {
 
 # Module for SQL Database
 module "sql_database" {
-  source              = "./modules/database"
+  source              = "../database"
   resource_group_name = var.resourceGroupName
   location            = var.location2
   login_username      = module.shared.sql_admins_group_name
@@ -115,7 +115,7 @@ data "azurerm_storage_blob" "tfstate" {
 
 # Create the GitHub UAMI
 module "gh_user_assigned_identity" {
-  source              = "./modules/github_managed_identity"
+  source              = "../github_managed_identity"
   name                = "${var.uami_github}-${var.environment}"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -124,7 +124,7 @@ module "gh_user_assigned_identity" {
 
 # Assign the Contributor Role to GH UAMI
 module "gh_uami_assigned_role" {
-  source               = "./modules/github_role_assignment"
+  source               = "../github_role_assignment"
   principal_id         = module.gh_user_assigned_identity.github_uami_principal_id
   role_definition_name = var.gh_uami_role_name
   scope_id             = data.azurerm_subscription.sub.id
@@ -135,7 +135,7 @@ module "gh_uami_assigned_role" {
 # Assign Storage Contributor Role to GH UAMI
 # Assign the Contributor Role to GH UAMI
 module "gh_uami_assigned_role_storage_data_blob_contributor" {
-  source               = "./modules/github_role_assignment"
+  source               = "../github_role_assignment"
   principal_id         = module.gh_user_assigned_identity.github_uami_principal_id
   role_definition_name = var.storage_blob_data_contributor
   scope_id             = data.azurerm_subscription.sub.id
@@ -144,7 +144,7 @@ module "gh_uami_assigned_role_storage_data_blob_contributor" {
 }
 
 module "gh_federated_identity" {
-  source              = "./modules/github_federation"
+  source              = "../github_federation"
   resource_group_name = azurerm_resource_group.rg.name
   audience            = [local.audiences]
   subject             = "repo:${var.github_organzation}/${var.github_repo}"
@@ -156,7 +156,7 @@ module "gh_federated_identity" {
 
 # Federated Identity for Dev
 module "gh_federated_identity_dev" {
-  source              = "./modules/github_federation"
+  source              = "../github_federation"
   resource_group_name = azurerm_resource_group.rg.name
   audience            = [local.audiences]
   subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.dev_branch}"
@@ -168,7 +168,7 @@ module "gh_federated_identity_dev" {
 
 # Federated Identity for Main
 module "gh_federated_identity_main" {
-  source              = "./modules/github_federation"
+  source              = "../github_federation"
   resource_group_name = azurerm_resource_group.rg.name
   audience            = [local.audiences]
   subject             = "repo:${var.github_organzation}/${var.github_repo}:ref:refs/heads/${var.main_branch}"
@@ -180,7 +180,7 @@ module "gh_federated_identity_main" {
 # create another federated identity for Main Branch pull requests
 
 module "gh_federated_identity_pull_request" {
-  source              = "./modules/github_federation"
+  source              = "../github_federation"
   resource_group_name = azurerm_resource_group.rg.name
   audience            = [local.audiences]
   subject             = "repo:${var.github_organzation}/${var.github_repo}:pull_request"
@@ -195,7 +195,7 @@ module "gh_federated_identity_pull_request" {
 
 # Assing Directory Reader Role to UAMI to read groups
 module "UAMI_directory_reader_role" {
-  source               = "./modules/entra_role_assignment"
+  source               = "../entra_role_assignment"
   uami_gh_principal_id = module.gh_user_assigned_identity.github_uami_principal_id
   display_name         = var.display_name_directory_reader
 }
