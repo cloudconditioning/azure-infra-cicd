@@ -137,6 +137,24 @@ variable "gh_federated_identity_name" {
 
 variable "contributor" {
   description = "Contributor Role"
-  type = string
-  default = "Contributor"
+  type        = string
+  default     = "Contributor"
+}
+
+variable "webapp_federated_identity_name" {
+  description = "Name of the GitHub Actions federated identity for the Web App UAMI"
+  type        = string
+  default     = "webapp_federated_credential"
+}
+
+variable "pr" {
+  description = "Pull Request Place Holder"
+  type        = string
+  default     = "pull_request"
+}
+
+variable "ref" {
+  description = "Used in Subject Identifier for branches with GitHub Actions"
+  type        = string
+  default     = "ref:refs/heads"
 }
