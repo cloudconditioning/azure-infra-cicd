@@ -1,6 +1,7 @@
 # First GitHub Action Workflow
 
 name: Deploy Azure Infrastructure
+
 on:
     push:
         branches:
@@ -18,6 +19,7 @@ permissions:
 jobs:
     terraform:
         name: Terraform Workflow
+        
         runs-on: ubuntu-latest
 
         steps:
@@ -43,22 +45,27 @@ jobs:
 
             # Terraform Init
             - name: Terraform Initialization
+              working-directory: ./modules/infra
               run: terraform init -input=false -backend-config="resource_group_name=${{secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME}}" -backend-config="storage_account_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}" -backend-config="container_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}"
 
             # Terraform Format Check
             - name: Terraform Format
+              working-directory: ./modules/infra
               run: terraform fmt -check 
     
             # Terraform Validate
             - name: Terraform Validate
+              working-directory: ./modules/infra
               run: terraform validate
     
             # Terraform Plan
             - name: Terraform Plan
+              working-directory: ./modules/infra
               run: terraform plan -input=false -out=tfplan
     
             # Terraform Apply for push to main
             - name: Terraform Apply (Optional)
+              working-directory: ./modules/infra
               if: github.event_name == 'push' && github.ref == 'refs/heads/main'
               run: terraform apply -auto-approve -input=false
 
