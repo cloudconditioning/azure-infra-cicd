@@ -5,6 +5,7 @@
 ## Audience lists the audiences that can appear in the external token. States which Microsoft idenittiy platform must accep in the `aud` claim in the incoming token.
 
 resource "azurerm_federated_identity_credential" "gh_cred" {
+  # consideer changing `gh_cred` to `cred`
   name = var.name
 resource_group_name = var.resource_group_name
 audience = var.audience

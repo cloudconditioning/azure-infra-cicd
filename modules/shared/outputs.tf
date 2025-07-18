@@ -22,6 +22,12 @@ output "web_app_identity_principal_id" {
   value       = azurerm_user_assigned_identity.web_app_identity.principal_id
   
 }
+
+output "web_app_identity_client_id" {
+  description = "Client ID of the Web App Managed Identity"
+  value = azurerm_user_assigned_identity.web_app_identity.client_id
+}
+
 /*
 output "database_idenity_id" {
   description = "The ID of the user-assigned identity for the database"
