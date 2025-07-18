@@ -90,6 +90,16 @@ resource "azurerm_role_assignment" "web_app_storage_data_reader" {
   principal_id         = module.shared.web_app_identity_principal_id
 }
 
+# Assign Contributor Role to webapp-identity so it can make changes
+module "assign_contributor_webapp_identity" {
+  source = "../github_role_assignment"
+  principal_id = module.shared.web_app_identity_principal_id
+  role_definition_name = var.contributor
+  scope_id = data.azurerm_subscription.sub # Consider giving for resource group only
+  principal_type = var.principal_type
+  
+}
+
 # Assign Database Managed Identity to SQL Administrator
 ## may not be needed
 
@@ -190,8 +200,6 @@ module "gh_federated_identity_pull_request" {
 
 
 }
-
-
 
 # Assing Directory Reader Role to UAMI to read groups
 module "UAMI_directory_reader_role" {

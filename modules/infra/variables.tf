@@ -134,3 +134,9 @@ variable "gh_federated_identity_name" {
   type        = string
   default     = "gh_federated_credential"
 }
+
+variable "contributor" {
+  description = "Contributor Role"
+  type = string
+  default = "Contributor"
+}
