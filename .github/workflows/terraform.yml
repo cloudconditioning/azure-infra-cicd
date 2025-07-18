@@ -6,17 +6,9 @@ on:
     push:
         branches:
             - main
-        # paths:
-          #- 'modules/infra/**'
-        #paths-ignore:
-        # - 'modules/web/**'
     pull_request:
         branches:
             - main
-        #paths:
-        #  - 'modules/infra/**'
-        #paths-ignore:
-        #  - 'modules/web/**'
     workflow_dispatch:
 
 permissions:
